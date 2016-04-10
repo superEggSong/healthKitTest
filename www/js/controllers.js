@@ -1,10 +1,9 @@
 angular.module('starter.controllers', ['ionic'])
 
 .controller('HealthKitCtrl', function($scope) {
-  $scope.healthData = {};
   //healthKit 지원여부 확인
   document.addEventListener("deviceready", function(){
-    alert('healthKit 시작');
+    console.log('healthKit 시작');
     window.plugins.healthkit.available(function(isAvailable){
       if(isAvailable == false)
       {
@@ -12,7 +11,6 @@ angular.module('starter.controllers', ['ionic'])
         $.mobile.changePage("#not-supported");
       }
     });
-
     // 키, 몸무게, 비타민 권한 요청
     window.plugins.healthkit.requestAuthorization({
       "readTypes"  : ["HKQuantityTypeIdentifierHeight", "HKQuantityTypeIdentifierBodyMass", "HKQuantityTypeIdentifierStepCount"],
@@ -23,74 +21,30 @@ angular.module('starter.controllers', ['ionic'])
       document.getElementById("error-info").innerHTML = "APP doesn't have sufficient permission";
       $.mobile.changePage("#not-supported");
     });
+  }, false);
 
-    // 걸음수 체크
+  // 걸음수 체크
+  $scope.getStepCount = function(){
     window.plugins.healthkit.querySampleType({
-      "startDate" : new Date(new Date().getTime() - 2*24*60*60*1000),
+      "startDate" : new Date(new Date().getTime() - 24*60*60*1000),
       "endDate"   : new Date(),
       "sampleType": "HKQuantityTypeIdentifierStepCount",
       "unit"      : "count"
     },
-    function(value){
-      alert('2일 동안 걸음 수 : ' + value[0].quantity);
+    function(stepData){
+      console.log(stepData[0]);
+      var arraySteaData = new Array();
+      var html = "";
+      for(var i=0; i<stepData.length; i++){
+        html += "<tr><td>" + stepData[i].startDate + "</td><td>" + stepData[i].endDate + "</td><td>" + stepData[i].quantity + "</td></tr>";
+      }
+      $("#tbodyStepData").append(html).closest("#tbodyStepData").table("refresh").trigger("create");
+      console.log(html);
     },
     function(){
-        console.log('불러오기 실패');
+
     });
-
-    window.plugins.healthkit.sumQuantityType(
-      {
-        'startDate': new Date(new Date().getTime() - 3 * 24 * 60 * 60 * 1000), // three days ago
-        'endDate': new Date(), // now
-        'sampleType': 'HKQuantityTypeIdentifierStepCount'
-      },
-      function (value) {
-        alert("Success for running step query " + value);
-      },
-      callback
-    );
-    
-    $scope.saveStep = function(){
-      var saveStep = $scope.healthData.saveStep;
-      alert(saveStep);
-      window.plugins.healthkit.saveQuantitySample(
-          {
-            'startDate': new Date(new Date().getTime() - 24 * 60 * 60 * 1000), // a day ago
-            'endDate': new Date(), // now
-            'sampleType': 'HKQuantityTypeIdentifierStepCount', // make sure you request write access beforehand
-            'unit': 'count',
-            'amount': 300
-          },
-          function (value) {
-            alert("Success running saveQuantitySample, result: " + value);
-          },
-          callback
-      );
-    }
-  
-  }, false);
-
-  
-  // display_hp_data = function(){
-  //   alert('click');
-  //   window.plugins.healthkit.checkAuthStatus({
-  //     "type": "HKQuantityTypeIdentifierStepCount"
-  //   },
-  //   function() {
-  //     window.plugins.healthkit.querySampleType({
-  //       "startDate" : new Date(new Date().getTime() - 2*24*60*60*1000),
-  //       "endDate"   : new Date(),
-  //       "sampleType": "HKQuantityTypeIdentifierStepCount",
-  //       "unit"      : "count"
-  //     },
-  //     function(value){
-  //         alert('success');
-  //     },
-  //     function(){
-  //         alert('fail');
-  //     });
-  //   });
-  // }
+  }
 })
 
 .controller('ChatsCtrl', function($scope, Chats) {
