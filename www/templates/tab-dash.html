@@ -1,0 +1,26 @@
+<ion-view view-title="Dashboard">
+  <ion-content class="padding">
+    <div data-role="page" id="home">
+	  <div data-role="header">
+	    <h1>HealthKit</h1>
+	  </div>
+
+	  <div data-role="main" class="ui-content">
+		<form ng-submit="saveStep()">
+		  	<div class="list">
+				<div class="item item-input-inset">
+					<label class="item-input-wrapper">
+						<input type="text" placeholder="오늘 걸은 걸음 수" ng-model="healthData.saveStep">
+					</label>
+					<button class="button button-small">
+						저장
+					</button>
+				</div>
+			</div>
+		</form>
+	  </div>
+	  <div id="stepInfo">
+	  </div>	  
+	</div>
+  </ion-content>
+</ion-view>
